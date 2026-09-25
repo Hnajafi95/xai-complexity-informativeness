@@ -1,0 +1,51 @@
+========================================================================
+BIBLIOMETRIC COMPOSITION AUDIT (Section 3, Figure 4)
+========================================================================
+Snapshot date: 2026-01-15
+Total unique cited keys in camera-ready.tex: 120
+Total unique keys defined in ref-gem.bib:  120
+
+Composition (counts and percentages of cited keys):
+              method:  14  ( 11.7%)
+            critique:  22  ( 18.3%)
+    complexity_aware:  10  (  8.3%)
+           benchmark:   9  (  7.5%)
+              theory:  14  ( 11.7%)
+              survey:  17  ( 14.2%)
+        practitioner:  34  ( 28.3%)
+               TOTAL: 120
+
+Key contrast for the maturation argument:
+  critique + benchmark + complexity-aware = 41/120  (34.2%)
+  method proposals                         = 14/120  (11.7%)
+
+Temporal panels (b, c) coverage:
+  XAI-era window shown: 2014-present
+  cited+categorized keys before 2014 (in pie, excluded from b/c): 13
+  cited+categorized keys with no parseable year:                 6
+
+All cited keys are categorized.
+
+Note: 28 categorized keys are no longer cited (safe to prune):
+  - Arenas2024hardness
+  - Barrero2024genaiadoption
+  - Carmichael2024explaining
+  - Chase2024
+  - DataScienceDojo2024xai
+  - Dodd2024barriers
+  - Ghorbani2024towards
+  - Gleixner2023
+  - Gondal2025
+  - Hoyer2025
+  - Lee2023
+  - Molnar2024guiding
+  - Nagpal2022towards
+  - PMC11048122
+  - PMC9313049
+  - Rajapaksha2024causal
+  - Sauter2024benchmarking
+  - StorytellingXAI2024
+  - Tomsett2018interpreting
+  - Varando2023
+  ... and 8 more
+

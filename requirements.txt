@@ -1,0 +1,24 @@
+# Versions used for the results reported in the paper (Python 3.13).
+# The TreeSHAP interaction values depend on the shap version: shap computes
+# interaction values only with the path-dependent algorithm.
+numpy==2.2.6
+pandas==2.3.0
+scipy==1.16.1
+scikit-learn==1.7.0
+statsmodels==0.14.6
+matplotlib==3.10.3
+networkx==3.5
+xgboost==3.0.2
+shap==0.48.0
+lime==0.2.0.1
+torch==2.7.1
+captum==0.9.0
+path-explain==0.0.7
+requests==2.32.3
+cairosvg==2.9.0        # only to convert figures/diagnostic_workflow.svg to PDF
+Pillow                 # only for the grayscale preview of Figure 1
+
+# E10 (transformer, GPU recommended):
+#   pip install slalom-explanations transformers datasets
+# E3's CALIME extension needs its own environment (pinned numpy 1.23.5):
+#   see experiments/setup_calime.sh

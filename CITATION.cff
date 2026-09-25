@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper."
+title: "Code for: Complexity vs. Informativeness in Explainable AI: Why Feature Attributions Fail and How to Diagnose the Failure"
+authors:
+  - family-names: Najafi
+    given-names: Hamed
+  - family-names: Luo
+    given-names: Dongsheng
+  - family-names: Bahreini
+    given-names: Kiavash
+  - family-names: Liu
+    given-names: Jason
+license: MIT
+repository-code: "https://github.com/Hnajafi95/xai-complexity-informativeness"
+preferred-citation:
+  type: article
+  title: "Complexity vs. Informativeness in Explainable AI: Why Feature Attributions Fail and How to Diagnose the Failure"
+  authors:
+    - family-names: Najafi
+      given-names: Hamed
+    - family-names: Luo
+      given-names: Dongsheng
+    - family-names: Bahreini
+      given-names: Kiavash
+    - family-names: Liu
+      given-names: Jason
+  journal: "Journal of Artificial Intelligence Research"
+  year: 2026

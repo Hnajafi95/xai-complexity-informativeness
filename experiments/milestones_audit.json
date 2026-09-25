@@ -1,0 +1,563 @@
+{
+  "snapshot_date": "2026-05-21",
+  "queries": [
+    {
+      "phase": "Method Creation",
+      "query": "LIME local interpretable model-agnostic explanations",
+      "n_results": 15
+    },
+    {
+      "phase": "Method Creation",
+      "query": "SHAP unified approach interpreting model predictions",
+      "n_results": 0
+    },
+    {
+      "phase": "Method Creation",
+      "query": "axiomatic attribution deep networks integrated gradients",
+      "n_results": 0
+    },
+    {
+      "phase": "Critical Scrutiny",
+      "query": "sanity checks saliency maps",
+      "n_results": 0
+    },
+    {
+      "phase": "Critical Scrutiny",
+      "query": "explanation method limitations attribution failure",
+      "n_results": 15
+    },
+    {
+      "phase": "Critical Scrutiny",
+      "query": "remove and retrain benchmark interpretability",
+      "n_results": 0
+    },
+    {
+      "phase": "Critical Scrutiny",
+      "query": "suppressor variables explainable AI",
+      "n_results": 0
+    },
+    {
+      "phase": "Complexity-Aware",
+      "query": "feature interaction attribution integrated hessians",
+      "n_results": 15
+    },
+    {
+      "phase": "Complexity-Aware",
+      "query": "impossibility theorems feature attribution",
+      "n_results": 0
+    },
+    {
+      "phase": "Complexity-Aware",
+      "query": "causality lime CALIME causal explanation",
+      "n_results": 4
+    },
+    {
+      "phase": "Complexity-Aware",
+      "query": "additive effects collinearity XAI",
+      "n_results": 15
+    },
+    {
+      "phase": "Complexity-Aware",
+      "query": "complexity benchmark XAI nonlinear",
+      "n_results": 0
+    }
+  ],
+  "raw_results_by_query": {
+    "LIME local interpretable model-agnostic explanations": [
+      {
+        "title": "Local Interpretable Model-agnostic Explanations of Bayesian Predictive Models via Kullback-Leibler Projections",
+        "year": 2018,
+        "citationCount": 43,
+        "firstAuthor": "peltola"
+      },
+      {
+        "title": "On the Art and Science of Machine Learning Explanations",
+        "year": 2018,
+        "citationCount": 34,
+        "firstAuthor": "hall"
+      },
+      {
+        "title": "Interpretable Active Learning",
+        "year": 2017,
+        "citationCount": 31,
+        "firstAuthor": "phillips"
+      },
+      {
+        "title": "Radar Signal Recognition Based on TPOT and LIME",
+        "year": 2018,
+        "citationCount": 9,
+        "firstAuthor": "zhang"
+      },
+      {
+        "title": "Improving the interpretability of species distribution models by using local approximations",
+        "year": 2018,
+        "citationCount": 1,
+        "firstAuthor": "angelov"
+      },
+      {
+        "title": "Development of Prediction Models Using Machine Learning Algorithms for Girls with Suspected Central Precocious Puberty: Retrospective Study",
+        "year": 2018,
+        "citationCount": 33,
+        "firstAuthor": "pan"
+      },
+      {
+        "title": "Towards Explainable Semantic Text Matching",
+        "year": 2018,
+        "citationCount": 7,
+        "firstAuthor": "landthaler"
+      },
+      {
+        "title": "Ranking Feature Importance Through Representation Hierarchies",
+        "year": 2018,
+        "citationCount": 0,
+        "firstAuthor": "parkala"
+      },
+      {
+        "title": "No Fragile Family Left Behind - Targeted Indicators of Academic Performance",
+        "year": 2018,
+        "citationCount": 0,
+        "firstAuthor": "sargsyan"
+      },
+      {
+        "title": "Local Interpretable Model-Agnostic Explanations for Music Content Analysis",
+        "year": 2017,
+        "citationCount": 195,
+        "firstAuthor": "mishra"
+      },
+      {
+        "title": "Anchors: High-Precision Model-Agnostic Explanations",
+        "year": 2018,
+        "citationCount": 2345,
+        "firstAuthor": "ribeiro"
+      },
+      {
+        "title": "Nothing Else Matters: Model-Agnostic Explanations By Identifying Prediction Invariance",
+        "year": 2016,
+        "citationCount": 72,
+        "firstAuthor": "ribeiro"
+      },
+      {
+        "title": "Model Agnostic Supervised Local Explanations",
+        "year": 2018,
+        "citationCount": 219,
+        "firstAuthor": "plumb"
+      },
+      {
+        "title": "MAGIX: Model Agnostic Globally Interpretable Explanations",
+        "year": 2017,
+        "citationCount": 44,
+        "firstAuthor": "puri"
+      },
+      {
+        "title": "Model-Agnostic Interpretability of Machine Learning",
+        "year": 2016,
+        "citationCount": 944,
+        "firstAuthor": "ribeiro"
+      }
+    ],
+    "SHAP unified approach interpreting model predictions": [],
+    "axiomatic attribution deep networks integrated gradients": [],
+    "sanity checks saliency maps": [],
+    "explanation method limitations attribution failure": [
+      {
+        "title": "Attribution-based Salience Method towards Interpretable Reinforcement Learning",
+        "year": 2020,
+        "citationCount": 13,
+        "firstAuthor": "wang"
+      },
+      {
+        "title": "Care Gaps in Adherence to Heart\u00a0Failure Guidelines: Clinical Inertia or Physiological Limitations?",
+        "year": 2020,
+        "citationCount": 102,
+        "firstAuthor": "jarjour"
+      },
+      {
+        "title": "Gradient-Based Attribution Methods",
+        "year": 2019,
+        "citationCount": 183,
+        "firstAuthor": "ancona"
+      },
+      {
+        "title": "Role of brand attachment in customers\u2019 evaluation of service failure",
+        "year": 2020,
+        "citationCount": 34,
+        "firstAuthor": "torres"
+      },
+      {
+        "title": "Narrating success and failure: Congressional debates on the \u2018Iran nuclear deal\u2019",
+        "year": 2018,
+        "citationCount": 40,
+        "firstAuthor": "oppermann"
+      },
+      {
+        "title": "Learning Deep Attribution Priors Based On Prior Knowledge",
+        "year": 2019,
+        "citationCount": 24,
+        "firstAuthor": "weinberger"
+      },
+      {
+        "title": "Lessons of success and failure: Practicing risk communication at government agencies",
+        "year": 2019,
+        "citationCount": 42,
+        "firstAuthor": "boholm"
+      },
+      {
+        "title": "Developing human-machine trust: Impacts of prior instruction and automation failure on driver trust in partially automated vehicles",
+        "year": 2021,
+        "citationCount": 53,
+        "firstAuthor": "lee"
+      },
+      {
+        "title": "Explaining Explanations: Axiomatic Feature Interactions for Deep Networks",
+        "year": 2020,
+        "citationCount": 180,
+        "firstAuthor": "janizek"
+      },
+      {
+        "title": "Internal and external attributions for sporting success and failure (Sports Coverage)",
+        "year": 2021,
+        "citationCount": 0,
+        "firstAuthor": "v\u00f6gele"
+      },
+      {
+        "title": "Failure Analysis Overview",
+        "year": 2021,
+        "citationCount": 0,
+        "firstAuthor": "sullivan"
+      },
+      {
+        "title": "An Anthropologist\u2019s View of American Marriage: Limitations of the Tool Kit Theory of Culture",
+        "year": 2018,
+        "citationCount": 14,
+        "firstAuthor": "quinn"
+      },
+      {
+        "title": "Rule Based Method in Expert System for Detection Pests and Diseases of Corn",
+        "year": 2020,
+        "citationCount": 12,
+        "firstAuthor": "sumaryanti"
+      },
+      {
+        "title": "TS-MULE: Local Interpretable Model-Agnostic Explanations for Time Series Forecast Models",
+        "year": 2021,
+        "citationCount": 44,
+        "firstAuthor": "schlegel"
+      },
+      {
+        "title": "Analysis and Improvement of Direct Sampling Method in the Monostatic Configuration",
+        "year": 2018,
+        "citationCount": 10,
+        "firstAuthor": "kang"
+      }
+    ],
+    "remove and retrain benchmark interpretability": [],
+    "suppressor variables explainable AI": [],
+    "feature interaction attribution integrated hessians": [
+      {
+        "title": "Integrated Directional Gradients: Feature Interaction Attribution for Neural NLP Models",
+        "year": 2021,
+        "citationCount": 49,
+        "firstAuthor": "sikdar"
+      },
+      {
+        "title": "DeepACTIF: Efficient Feature Attribution via Activation Traces in Neural Sequence Models",
+        "year": 2025,
+        "citationCount": 1,
+        "firstAuthor": "hosp"
+      },
+      {
+        "title": "Higher-Order Feature Attribution: Bridging Statistics, Explainable AI, and Topological Signal Processing",
+        "year": 2025,
+        "citationCount": 1,
+        "firstAuthor": "butler"
+      },
+      {
+        "title": "A Unified Framework for Input Feature Attribution Analysis",
+        "year": 2024,
+        "citationCount": 2,
+        "firstAuthor": "sun"
+      },
+      {
+        "title": "Flood susceptibility assessment in Seti Gandaki river basin using an integrated gradients approach",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "biswash"
+      },
+      {
+        "title": "Modeling Temporal Dependencies and Feature Interactions Reveal Novel Clinical and Molecular Insights into Alzheimer\u2019s Disease Progression",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "haque"
+      },
+      {
+        "title": "Frequency-Integrated Transformer for Arbitrary-Scale Super-Resolution",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "wang"
+      },
+      {
+        "title": "Integration of Machine Learning and Feature Analysis for the Optimization of Enhanced Oil Recovery and Carbon Sequestration in Oil Reservoirs",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "mepaiyeda"
+      },
+      {
+        "title": "Studying Limits of Explainability by Integrated Gradients for Gene Expression Models",
+        "year": 2023,
+        "citationCount": 2,
+        "firstAuthor": "bontonou"
+      },
+      {
+        "title": "Interpretable Artificial Intelligence-Based Short-Term Power Load Prediction: A Practical Investigation Of Temporal Convolutional Networks",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "zhou"
+      },
+      {
+        "title": "Enhancing Clinical Applicability: Interpretable Deep Learning for Cardiovascular Risk",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "karikatti"
+      },
+      {
+        "title": "An Intelligent Badminton Handle With Multinode MEMS Sensors for Explainable Motion Recognition",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "li"
+      },
+      {
+        "title": "VAMP-Net: An Interpretable Multi-Path Network of Genomic Permutation-Invariant Set Attention and Quality-Aware 1D-CNN for MTB Drug Resistance",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "boutorh"
+      },
+      {
+        "title": "PREVENTIVE EDUCATION AS A SYSTEMIC COMPONENT OF HEALTH CARE",
+        "year": 2024,
+        "citationCount": 0,
+        "firstAuthor": "lavrova"
+      },
+      {
+        "title": "Explainable AI in E-Commerce: Seller Recommendations with Ethnocentric Transparency",
+        "year": 2024,
+        "citationCount": 0,
+        "firstAuthor": "akhtar"
+      }
+    ],
+    "impossibility theorems feature attribution": [],
+    "causality lime CALIME causal explanation": [
+      {
+        "title": "CIP-ES: Causal Input Perturbation for Explanation Surrogates",
+        "year": 2023,
+        "citationCount": 1,
+        "firstAuthor": "steindl"
+      },
+      {
+        "title": "CALIME: Causality-Aware Local Interpretable Model-Agnostic Explanations",
+        "year": 2022,
+        "citationCount": 4,
+        "firstAuthor": "cinquini"
+      },
+      {
+        "title": "CIRCE: a Scalable Methodology for Causal Explanations in Cyber-Physical Systems",
+        "year": 2024,
+        "citationCount": 6,
+        "firstAuthor": "reyd"
+      },
+      {
+        "title": "Explaining Black-Box Algorithms Using Probabilistic Contrastive Counterfactuals",
+        "year": 2021,
+        "citationCount": 121,
+        "firstAuthor": "galhotra"
+      }
+    ],
+    "additive effects collinearity XAI": [
+      {
+        "title": "Explainable Artificial Intelligence for Dependent Features: Additive Effects of Collinearity",
+        "year": 2024,
+        "citationCount": 1,
+        "firstAuthor": "salih"
+      },
+      {
+        "title": "The Effects of Renewable Energy Consumption on Financial Performance: An Explainable Artificial Intelligence (XAI)-Based Research on the BIST Sustainability Index",
+        "year": 2025,
+        "citationCount": 4,
+        "firstAuthor": "\u00e7ankal"
+      },
+      {
+        "title": "Untangle the Effects of Classroom Environmental Features on Middle-School Students\u2019 Mood Perception with Machine Learning and XAI",
+        "year": 2025,
+        "citationCount": 1,
+        "firstAuthor": "xu"
+      },
+      {
+        "title": "Integrating CCK8 and qPCR with xAI Models to Evaluate siRNA Effects on Cellular Viability and Gene Expression",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "behera"
+      },
+      {
+        "title": "XAI-Based Sensitivity Analysis of High-Speed Link Considering Channel Operating Margin",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "lee"
+      },
+      {
+        "title": "Carbon Emissions and Firm Profitability: A SHAP and ALE-Based XAI Approach on the BIST Sustainability Index",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "ever"
+      },
+      {
+        "title": "Interpretable XAI-Driven Crop Price Prediction System Integrating Climatic and Market Dynamics for Trustworthy and Informed Agricultural Decision-Making",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "r"
+      },
+      {
+        "title": "Tackling the XAI Disagreement Problem with Regional Explanations",
+        "year": 2024,
+        "citationCount": 16,
+        "firstAuthor": "laberge"
+      },
+      {
+        "title": "XAI in Wireless Communications: A Case Study on Interpretable 5G Performance Analysis",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "sahin"
+      },
+      {
+        "title": "Thyroid Detection and Interpretation using XAI (eXplanable Artificial Intelligence)",
+        "year": 2024,
+        "citationCount": 1,
+        "firstAuthor": "karnati"
+      },
+      {
+        "title": "Developing an explainable artificial intelligent (XAI) model for predicting pile driving vibrations in Bangkok\u2019s subsoil",
+        "year": 2024,
+        "citationCount": 3,
+        "firstAuthor": "youwai"
+      },
+      {
+        "title": "Explainable Differential Privacy-Hyperdimensional Computing for Balancing Privacy and Transparency in Additive Manufacturing Monitoring",
+        "year": 2024,
+        "citationCount": 14,
+        "firstAuthor": "piran"
+      },
+      {
+        "title": "The Quest for the Best Explanation: Comparing Models and XAI Methods in Air Quality Modeling Tasks",
+        "year": 2025,
+        "citationCount": 4,
+        "firstAuthor": "tasioulis"
+      },
+      {
+        "title": "Application of Explainable Artificial Intelligence (XAI) in Urban Growth Modeling: A Case Study of Seoul Metropolitan Area, Korea",
+        "year": 2023,
+        "citationCount": 37,
+        "firstAuthor": "kim"
+      },
+      {
+        "title": "Process Optimization and Characterization of L-PBF 3.3% Si Electrical Steel via Machine Learning and XAI",
+        "year": 2025,
+        "citationCount": 0,
+        "firstAuthor": "kim"
+      }
+    ],
+    "complexity benchmark XAI nonlinear": []
+  },
+  "deduplicated_candidates": [
+    {
+      "year": 2018,
+      "short_name": "Anchors\nHigh-Precision",
+      "phase": "Method Creation",
+      "citations": 2345,
+      "bibkey": "Ribeiro2016why",
+      "_title": "Anchors: High-Precision Model-Agnostic Explanations",
+      "_first_author": "ribeiro"
+    },
+    {
+      "year": 2019,
+      "short_name": "Gradient-Based",
+      "phase": "Critical Scrutiny",
+      "citations": 183,
+      "bibkey": "",
+      "_title": "Gradient-Based Attribution Methods",
+      "_first_author": "ancona"
+    },
+    {
+      "year": 2021,
+      "short_name": "Integrated\nDirectional",
+      "phase": "Complexity-Aware",
+      "citations": 49,
+      "bibkey": "",
+      "_title": "Integrated Directional Gradients: Feature Interaction Attribution for Neural NLP Models",
+      "_first_author": "sikdar"
+    },
+    {
+      "year": 2021,
+      "short_name": "Explaining\nBlack-Box",
+      "phase": "Complexity-Aware",
+      "citations": 121,
+      "bibkey": "",
+      "_title": "Explaining Black-Box Algorithms Using Probabilistic Contrastive Counterfactuals",
+      "_first_author": "galhotra"
+    },
+    {
+      "year": 2023,
+      "short_name": "Application\nArtificial",
+      "phase": "Complexity-Aware",
+      "citations": 37,
+      "bibkey": "",
+      "_title": "Application of Explainable Artificial Intelligence (XAI) in Urban Growth Modeling: A Case Study of Seoul Metropolitan Area, Korea",
+      "_first_author": "kim"
+    }
+  ],
+  "selected_milestones": [
+    {
+      "year": 2018,
+      "short_name": "Anchors\nHigh-Precision",
+      "phase": "Method Creation",
+      "citations": 2345,
+      "bibkey": "Ribeiro2016why",
+      "_title": "Anchors: High-Precision Model-Agnostic Explanations",
+      "_first_author": "ribeiro"
+    },
+    {
+      "year": 2019,
+      "short_name": "Gradient-Based",
+      "phase": "Critical Scrutiny",
+      "citations": 183,
+      "bibkey": "",
+      "_title": "Gradient-Based Attribution Methods",
+      "_first_author": "ancona"
+    },
+    {
+      "year": 2021,
+      "short_name": "Explaining\nBlack-Box",
+      "phase": "Complexity-Aware",
+      "citations": 121,
+      "bibkey": "",
+      "_title": "Explaining Black-Box Algorithms Using Probabilistic Contrastive Counterfactuals",
+      "_first_author": "galhotra"
+    },
+    {
+      "year": 2021,
+      "short_name": "Integrated\nDirectional",
+      "phase": "Complexity-Aware",
+      "citations": 49,
+      "bibkey": "",
+      "_title": "Integrated Directional Gradients: Feature Interaction Attribution for Neural NLP Models",
+      "_first_author": "sikdar"
+    },
+    {
+      "year": 2023,
+      "short_name": "Application\nArtificial",
+      "phase": "Complexity-Aware",
+      "citations": 37,
+      "bibkey": "",
+      "_title": "Application of Explainable Artificial Intelligence (XAI) in Urban Growth Modeling: A Case Study of Seoul Metropolitan Area, Korea",
+      "_first_author": "kim"
+    }
+  ],
+  "notes": "Milestones were selected by querying the Semantic Scholar public API for each maturation phase with phase-appropriate keyword strings. From each query's top-20 results, we kept the most-cited paper per query as a representative, then deduplicated across queries by title. The procedure is documented here so a reviewer can reproduce the selection or modify the queries and re-run."
+}

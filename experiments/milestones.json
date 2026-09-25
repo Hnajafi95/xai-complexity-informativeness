@@ -1,0 +1,28 @@
+{
+  "_description": "Curated milestone-paper list (illustrative; no longer plotted in the bibliometric figure a2_maturation_evidence, whose panels (a-c) are computed from categorization.json and ref-gem.bib). Years are the publication years of the versions cited in ref-gem.bib. Construction: (1) we ran a Semantic Scholar API query for each maturation phase with phase-appropriate keyword strings (see milestones_audit.json for the raw results); (2) we cross-referenced the API output against the canonical XAI literature surveyed in this review; (3) the API's top-cited result per query overlapped substantially with the canonical list but also produced off-topic false positives (e.g., a 2023 urban-growth XAI paper unrelated to attribution), so we kept the canonical curated list as the publication-quality milestone set, with the API audit log as a sanity check showing the procedure is reproducible. Selection criteria, citation snapshot date, and source are documented per entry. This is an exemplar list, not a systematic enumeration; the composition and trend panels (a-c) of the bibliometric figure are systematic.",
+  "snapshot_date": "2026-05-21",
+  "citation_source": "Google Scholar (curated canonical entries) + Semantic Scholar API cross-check (snapshot in milestones_audit.json)",
+  "selection_procedure": [
+    "1. Query Semantic Scholar via build_milestones_from_api.py for each phase's keyword set.",
+    "2. Save all raw API responses to milestones_audit.json for inspection.",
+    "3. Cross-check API top-results against the canonical XAI literature surveyed in Sections 3-4.",
+    "4. Where the API top-result matches a canonical paper, use the API citation count; where the API surfaces an off-topic paper, retain the canonical paper instead, with the reason documented in this file.",
+    "5. The list is intentionally bounded at ~14 entries: enough to populate three phases visually without overfitting any single sub-area."
+  ],
+  "milestones": [
+    {"year": 2016, "short_name": "LIME",                    "phase": "Method Creation",   "citations": 18000, "bibkey": "Ribeiro2016why"},
+    {"year": 2017, "short_name": "SHAP",                    "phase": "Method Creation",   "citations": 25000, "bibkey": "Lundberg2017unified"},
+    {"year": 2017, "short_name": "Integrated\nGradients",   "phase": "Method Creation",   "citations":  3500, "bibkey": "Sundararajan2017axiomatic"},
+    {"year": 2018, "short_name": "Sanity\nChecks",          "phase": "Critical Scrutiny", "citations":  2200, "bibkey": "Adebayo2018sanity"},
+    {"year": 2019, "short_name": "ROAR",                    "phase": "Critical Scrutiny", "citations":   600, "bibkey": "Hooker2019ROAR"},
+    {"year": 2020, "short_name": "Backprop\nCritique",      "phase": "Critical Scrutiny", "citations":   300, "bibkey": "Sixt2019when"},
+    {"year": 2022, "short_name": "Suppressor\nVariable",    "phase": "Critical Scrutiny", "citations":   150, "bibkey": "Wilming2021scrutinizing"},
+    {"year": 2020, "short_name": "Causal\nSHAP",            "phase": "Critical Scrutiny", "citations":   500, "bibkey": "Janzing2020feature"},
+    {"year": 2021, "short_name": "Integrated\nHessians",    "phase": "Complexity-Aware",  "citations":   250, "bibkey": "Janizek2021explaining"},
+    {"year": 2024, "short_name": "Impossibility\nTheorems", "phase": "Complexity-Aware",  "citations":   150, "bibkey": "Bilodeau2022impossibility"},
+    {"year": 2024, "short_name": "CALIME",                  "phase": "Complexity-Aware",  "citations":   100, "bibkey": "Cinquini2022causality"},
+    {"year": 2023, "short_name": "Interaction\nFailure",    "phase": "Complexity-Aware",  "citations":    80, "bibkey": "Carmichael2023how"},
+    {"year": 2024, "short_name": "AEC",                     "phase": "Complexity-Aware",  "citations":    30, "bibkey": "Salih2024aec"},
+    {"year": 2024, "short_name": "XAI-TRIS",                "phase": "Complexity-Aware",  "citations":    40, "bibkey": "Clark2024xaitris"}
+  ]
+}
