@@ -22,13 +22,18 @@ the causal graph. CALIME therefore acts here as an on-manifold neighbourhood
 sampler, not as a causal explainer. X3 is independent.
 
 PLACE THIS FILE INSIDE THE CLONED REPO so `from src...` resolves:
-    cp e3_calime_hpc.py ~/CALIME/ && cd ~/CALIME
+    cp e3_calime_hpc.py paper_style.py ~/CALIME/ && cd ~/CALIME
     source ~/calime_venv/bin/activate
     python e3_calime_hpc.py
 
 Outputs (in ~/CALIME/results_e3_calime/): e3_calime_results.npy + e3_calime.png/.pdf
+
+Redraw the figure from saved results only (no CALIME install needed, no rerun):
+    python3 e3_calime_hpc.py --plot-only [--results PATH] [--outdir DIR]
+By default this reads e3_calime_results.npy next to this script (falling back to
+results_e3_calime/) and writes e3_calime.pdf/.png next to the results file.
 """
-import os, time, warnings
+import os, sys, time, argparse, warnings
 warnings.simplefilter("ignore")
 import numpy as np
 import pandas as pd
@@ -36,13 +41,10 @@ import networkx as nx
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 
-# Discovery-FREE imports only (these do NOT pull in fim or sdv):
-from src.gencda.generative_model import CausalDataGeneration
-from src.calime_explainer import CALimeExplainer
-from src.lime_explainer import LimeExplainer
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from paper_style import apply_style, fig_size
 
 SEEDS = [0, 1, 2, 3, 4]   # repeat the whole pipeline to check robustness
 N_EXPLAIN   = 40          # test instances to explain per seed
@@ -80,6 +82,14 @@ def aggregate(explainer, test, rf, tag):
 
 
 def run_once(seed):
+    # Experiment-only imports (CALIME repo + sklearn); not needed for --plot-only.
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.model_selection import train_test_split
+    # Discovery-FREE imports only (these do NOT pull in fim or sdv):
+    from src.gencda.generative_model import CausalDataGeneration
+    from src.calime_explainer import CALimeExplainer
+    from src.lime_explainer import LimeExplainer
+
     np.random.seed(seed)
     X, y = make_data(seed)
     train, test = X.iloc[:-N_EXPLAIN], X.iloc[-N_EXPLAIN:]
@@ -105,55 +115,88 @@ def run_once(seed):
     return norm(cN), norm(lN), acc
 
 
-path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results_e3_calime")
-os.makedirs(path, exist_ok=True)
-calime_runs, lime_runs, accs = [], [], []
-for seed in SEEDS:
-    t0 = time.time()
-    cN, lN, acc = run_once(seed)
-    calime_runs.append(cN); lime_runs.append(lN); accs.append(acc)
-    print(f"seed {seed}: RF acc={acc:.3f} | "
-          f"CALIME X1/X2={cN[0]/max(cN[1],1e-12):.2f} (X1={cN[0]:.3f},X2={cN[1]:.3f},X3={cN[2]:.3f}) | "
-          f"LIME X1/X2={lN[0]/max(lN[1],1e-12):.2f} (X1={lN[0]:.3f},X2={lN[1]:.3f},X3={lN[2]:.3f}) "
-          f"[{time.time()-t0:.0f}s]")
+def make_figure(res, outdir):
+    """Fig. (E3/CALIME): mean normalized importance per feature, CALIME vs LIME.
 
-C = np.array(calime_runs); L = np.array(lime_runs)            # (seeds, 3)
-cR = C[:, 0] / np.clip(C[:, 1], 1e-12, None)                  # per-seed X1/X2 ratios
-lR = L[:, 0] / np.clip(L[:, 1], 1e-12, None)
+    Uses only the saved results dict (e3_calime_results.npy)."""
+    C = np.asarray(res["calime_runs"]); L = np.asarray(res["lime_runs"])  # (seeds, 3)
+    cR = C[:, 0] / np.clip(C[:, 1], 1e-12, None)
+    lR = L[:, 0] / np.clip(L[:, 1], 1e-12, None)
+    cM, cS = C.mean(0), C.std(0); lM, lS = L.mean(0), L.std(0)
 
-print("\n=== robustness over", len(SEEDS), "seeds (mean +/- std) ===")
-print(f"RF accuracy:        {np.mean(accs):.3f} +/- {np.std(accs):.3f}")
-print(f"CALIME X1/X2 ratio: {cR.mean():.2f} +/- {cR.std():.2f}   (per-seed: {np.round(cR,2).tolist()})")
-print(f"LIME   X1/X2 ratio: {lR.mean():.2f} +/- {lR.std():.2f}   (per-seed: {np.round(lR,2).tolist()})")
-wins = int((cR < lR).sum())
-print(f"CALIME ratio < LIME ratio in {wins}/{len(SEEDS)} seeds "
-      f"(i.e. CALIME less asymmetric than LIME)")
-print("\nReading: X1,X2 are collinear reads of the same latent s. Plain LIME perturbs")
-print("independently and concentrates credit on the cleaner read (large X1/X2). CALIME")
-print("keeps X1,X2 coupled, sharing credit (smaller X1/X2) -- toward the symmetric answer")
-print("PatternAttribution/AEC give. Same ordering in both; the effect is in the *degree*.")
+    apply_style()
+    fig, ax = plt.subplots(figsize=fig_size(0.50, 0.72))
+    xs = np.arange(3); w = 0.38
+    ekw = dict(elinewidth=0.8, capthick=0.8)
+    ax.bar(xs - w/2, cM, w, yerr=cS, capsize=2.5, error_kw=ekw, color="#0072B2",
+           label=f"CALIME (X1/X2={cR.mean():.1f}$\\pm${cR.std():.1f})")
+    ax.bar(xs + w/2, lM, w, yerr=lS, capsize=2.5, error_kw=ekw, color="#D55E00",
+           label=f"plain LIME (X1/X2={lR.mean():.1f}$\\pm${lR.std():.1f})")
+    ax.set_xticks(xs); ax.set_xticklabels(["X1 (clean)", "X2 (noisy)", "X3 (noise)"])
+    ax.set_ylabel("normalized importance\n(mean over seeds)")
+    ax.legend(loc="upper right", handlelength=1.0, handletextpad=0.4, borderaxespad=0.3)
+    fig.savefig(os.path.join(outdir, "e3_calime.pdf"), bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(os.path.join(outdir, "e3_calime.png"), dpi=300, bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    print("wrote e3_calime.png/.pdf in", outdir)
 
-np.save(os.path.join(path, "e3_calime_results.npy"),
-        {"seeds": SEEDS, "calime_runs": C.tolist(), "lime_runs": L.tolist(),
-         "calime_ratio_mean": float(cR.mean()), "calime_ratio_std": float(cR.std()),
-         "lime_ratio_mean": float(lR.mean()), "lime_ratio_std": float(lR.std()),
-         "calime_lt_lime_seeds": wins, "n_seeds": len(SEEDS),
-         "rf_acc_mean": float(np.mean(accs)), "n_explain": N_EXPLAIN, "num_samples": NUM_SAMPLES})
 
-# figure: mean importance bars with std error bars
-cM, cS = C.mean(0), C.std(0); lM, lS = L.mean(0), L.std(0)
-fig, ax = plt.subplots(figsize=(6.4, 4.2))
-xs = np.arange(3); w = 0.38
-ax.bar(xs - w/2, cM, w, yerr=cS, capsize=4, color="#0072B2",
-       label=f"CALIME (X1/X2={cR.mean():.1f}$\\pm${cR.std():.1f})")
-ax.bar(xs + w/2, lM, w, yerr=lS, capsize=4, color="#D55E00",
-       label=f"plain LIME (X1/X2={lR.mean():.1f}$\\pm${lR.std():.1f})")
-ax.set_xticks(xs); ax.set_xticklabels(["X1 (clean)", "X2 (noisy)", "X3 (noise)"])
-ax.set_ylabel("normalized importance (mean over seeds)")
-ax.set_title(f"E3 (binarized): CALIME causal-aware vs plain LIME\n"
-             f"on collinear reads of a latent source ({len(SEEDS)} seeds)")
-ax.legend()
-plt.tight_layout()
-plt.savefig(os.path.join(path, "e3_calime.png"), dpi=160, bbox_inches="tight")
-plt.savefig(os.path.join(path, "e3_calime.pdf"), bbox_inches="tight")
-print("\nwrote e3_calime_results.npy and e3_calime.png/.pdf in", path)
+def run_experiment():
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results_e3_calime")
+    os.makedirs(path, exist_ok=True)
+    calime_runs, lime_runs, accs = [], [], []
+    for seed in SEEDS:
+        t0 = time.time()
+        cN, lN, acc = run_once(seed)
+        calime_runs.append(cN); lime_runs.append(lN); accs.append(acc)
+        print(f"seed {seed}: RF acc={acc:.3f} | "
+              f"CALIME X1/X2={cN[0]/max(cN[1],1e-12):.2f} (X1={cN[0]:.3f},X2={cN[1]:.3f},X3={cN[2]:.3f}) | "
+              f"LIME X1/X2={lN[0]/max(lN[1],1e-12):.2f} (X1={lN[0]:.3f},X2={lN[1]:.3f},X3={lN[2]:.3f}) "
+              f"[{time.time()-t0:.0f}s]")
+
+    C = np.array(calime_runs); L = np.array(lime_runs)            # (seeds, 3)
+    cR = C[:, 0] / np.clip(C[:, 1], 1e-12, None)                  # per-seed X1/X2 ratios
+    lR = L[:, 0] / np.clip(L[:, 1], 1e-12, None)
+
+    print("\n=== robustness over", len(SEEDS), "seeds (mean +/- std) ===")
+    print(f"RF accuracy:        {np.mean(accs):.3f} +/- {np.std(accs):.3f}")
+    print(f"CALIME X1/X2 ratio: {cR.mean():.2f} +/- {cR.std():.2f}   (per-seed: {np.round(cR,2).tolist()})")
+    print(f"LIME   X1/X2 ratio: {lR.mean():.2f} +/- {lR.std():.2f}   (per-seed: {np.round(lR,2).tolist()})")
+    wins = int((cR < lR).sum())
+    print(f"CALIME ratio < LIME ratio in {wins}/{len(SEEDS)} seeds "
+          f"(i.e. CALIME less asymmetric than LIME)")
+    print("\nReading: X1,X2 are collinear reads of the same latent s. Plain LIME perturbs")
+    print("independently and concentrates credit on the cleaner read (large X1/X2). CALIME")
+    print("keeps X1,X2 coupled, sharing credit (smaller X1/X2) -- toward the symmetric answer")
+    print("PatternAttribution/AEC give. Same ordering in both; the effect is in the *degree*.")
+
+    np.save(os.path.join(path, "e3_calime_results.npy"),
+            {"seeds": SEEDS, "calime_runs": C.tolist(), "lime_runs": L.tolist(),
+             "calime_ratio_mean": float(cR.mean()), "calime_ratio_std": float(cR.std()),
+             "lime_ratio_mean": float(lR.mean()), "lime_ratio_std": float(lR.std()),
+             "calime_lt_lime_seeds": wins, "n_seeds": len(SEEDS),
+             "rf_acc_mean": float(np.mean(accs)), "n_explain": N_EXPLAIN, "num_samples": NUM_SAMPLES})
+    res = np.load(os.path.join(path, "e3_calime_results.npy"), allow_pickle=True).item()
+    make_figure(res, path)
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    ap.add_argument("--plot-only", action="store_true",
+                    help="redraw the figure from saved results without rerunning")
+    ap.add_argument("--results", default=None, help="path to e3_calime_results.npy")
+    ap.add_argument("--outdir", default=None, help="where to write e3_calime.pdf/.png")
+    args = ap.parse_args()
+    if args.plot_only:
+        rpath = args.results
+        if rpath is None:
+            for cand in (os.path.join(HERE, "e3_calime_results.npy"),
+                         os.path.join(HERE, "results_e3_calime", "e3_calime_results.npy")):
+                if os.path.exists(cand):
+                    rpath = cand; break
+        if rpath is None or not os.path.exists(rpath):
+            sys.exit("e3_calime_results.npy not found; pass --results PATH")
+        res = np.load(rpath, allow_pickle=True).item()
+        make_figure(res, args.outdir or os.path.dirname(os.path.abspath(rpath)))
+    else:
+        run_experiment()

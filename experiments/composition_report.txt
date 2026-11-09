@@ -22,7 +22,7 @@ Key contrast for the maturation argument:
 Temporal panels (b, c) coverage:
   XAI-era window shown: 2014-present
   cited+categorized keys before 2014 (in pie, excluded from b/c): 13
-  cited+categorized keys with no parseable year:                 6
+  cited+categorized keys with no parseable year:                 5
 
 All cited keys are categorized.
 

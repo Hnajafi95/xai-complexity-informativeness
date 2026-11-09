@@ -39,8 +39,12 @@ releases code differing in details, the experiment can be updated.
 
 Run:
     cd revised_v2 && python3 experiments/e3_collinearity_methods.py
+    cd revised_v2 && python3 experiments/e3_collinearity_methods.py --plot-only
+(--plot-only redraws e3_collinearity_comparison.{pdf,png} from the saved
+e3_results.npy without rerunning the experiment.)
 """
 
+import argparse
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -50,13 +54,65 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from paper_style import apply_style, fig_size
+
+HERE = Path(__file__).resolve().parent
+
+# Two-line tick labels for the print-size figure (same wording as the method keys).
+TICK_WRAP = {
+    "Interv. SHAP (KernelSHAP, linear)": "Interv. SHAP\n(KernelSHAP, linear)",
+    "TreeSHAP (interventional)": "TreeSHAP\n(interventional)",
+    "Obs. SHAP (conditional, linear)": "Obs. SHAP\n(conditional, linear)",
+    "AEC (direct component)": "AEC\n(direct component)",
+}
+
+
+def make_figure(out):
+    """Draw e3_collinearity_comparison.{pdf,png} from the saved e3_results.npy dict."""
+    apply_style()
+    normalized = out["normalized_importance"]
+    fig, ax = plt.subplots(figsize=fig_size(0.735, 0.51))
+    method_names = list(normalized.keys())
+    x1_vals = [normalized[m][0] for m in normalized]
+    x2_vals = [normalized[m][1] for m in normalized]
+    x3_vals = [normalized[m][2] for m in normalized]
+    x_pos = np.arange(len(method_names))
+    bar_w = 0.27
+
+    ax.bar(x_pos - bar_w, x1_vals, bar_w, label="X1 (clean read of latent source)", color="#3498db")
+    ax.bar(x_pos, x2_vals, bar_w, label="X2 (noisier read of same source)", color="#9b59b6")
+    ax.bar(x_pos + bar_w, x3_vals, bar_w, label="X3 (independent noise)", color="#95a5a6")
+
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels([TICK_WRAP.get(m, m) for m in method_names],
+                       rotation=25, ha="right", rotation_mode="anchor")
+    ax.set_ylabel("Normalized |attribution|")
+    ax.legend(loc="upper right")
+    ax.grid(axis="y", alpha=0.3, linestyle="--")
+    ax.set_axisbelow(True)
+    ax.set_ylim(0, 1.0)
+    ax.axhline(0.5, color="green", linestyle=":", alpha=0.5, linewidth=1)
+
+    for ext in ("pdf", "png"):
+        fig.savefig(HERE / f"e3_collinearity_comparison.{ext}", bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    print(f"Figure saved to {HERE / 'e3_collinearity_comparison.pdf'}")
+
+
+_ap = argparse.ArgumentParser()
+_ap.add_argument("--plot-only", action="store_true",
+                 help="redraw the figure from saved e3_results.npy; do not rerun the experiment")
+if _ap.parse_args().plot_only:
+    make_figure(np.load(HERE / "e3_results.npy", allow_pickle=True).item())
+    raise SystemExit(0)
+
+# Experiment-only dependencies (not needed for --plot-only)
 import pandas as pd
 import shap
 import xgboost as xgb
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from scipy.stats import pearsonr
 
-HERE = Path(__file__).resolve().parent
 np.random.seed(0)
 
 
@@ -234,33 +290,4 @@ out = {
 }
 np.save(HERE / "e3_results.npy", out)
 
-fig, ax = plt.subplots(figsize=(11.5, 5.4))
-method_names = list(normalized.keys())
-x1_vals = [normalized[m][0] for m in normalized]
-x2_vals = [normalized[m][1] for m in normalized]
-x3_vals = [normalized[m][2] for m in normalized]
-x_pos = np.arange(len(method_names))
-bar_w = 0.27
-
-ax.bar(x_pos - bar_w, x1_vals, bar_w, label="X1 (clean read of latent source)", color="#3498db")
-ax.bar(x_pos, x2_vals, bar_w, label="X2 (noisier read of same source)", color="#9b59b6")
-ax.bar(x_pos + bar_w, x3_vals, bar_w, label="X3 (independent noise)", color="#95a5a6")
-
-ax.set_xticks(x_pos)
-ax.set_xticklabels(method_names, rotation=12, ha="right", fontsize=9)
-ax.set_ylabel("Normalized |attribution|")
-ax.set_title(
-    "E3 — Two noisy reads of one latent source (corr(X1, X2) ≈ 0.88).\n"
-    "Interventional SHAP follows the fitted weights (model reliance); observational SHAP,\n"
-    "PatternAttribution and AEC share credit across the dependent reads (data-level view).",
-    fontsize=10,
-)
-ax.legend(fontsize=9, loc="upper right")
-ax.grid(axis="y", alpha=0.3, linestyle="--")
-ax.set_ylim(0, 1.0)
-ax.axhline(0.5, color="green", linestyle=":", alpha=0.5, linewidth=1)
-
-plt.tight_layout()
-plt.savefig(HERE / "e3_collinearity_comparison.pdf", dpi=150, bbox_inches="tight")
-plt.savefig(HERE / "e3_collinearity_comparison.png", dpi=150, bbox_inches="tight")
-print(f"\nFigure saved to {HERE / 'e3_collinearity_comparison.pdf'}")
+make_figure(out)

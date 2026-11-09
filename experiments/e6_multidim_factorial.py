@@ -35,6 +35,59 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+from paper_style import apply_style, fig_size
+
+HERE = Path(__file__).resolve().parent
+
+
+def make_figure(out):
+    """Draw Fig. E6 from the saved results dict (e6_results.npy)."""
+    rhos, betas = out["rhos"], out["betas"]
+    methods = ["KernelSHAP", "TreeSHAP_interaction", "IH"]
+    tau_grid = {m: np.asarray(out["tau_grid"][m]) for m in methods}
+    apply_style()
+    fig, axes = plt.subplots(1, 3, figsize=fig_size(1.0, 0.36), sharey=True,
+                             layout="constrained")
+    for ax, m in zip(axes, methods):
+        # cividis: perceptually uniform and color-blind-safe (replaces RdYlGn, which
+        # is the worst case for deuteranopia and unreadable in grayscale). Every cell
+        # is also annotated with its numeric tau below, so the figure reads in B&W.
+        im = ax.imshow(tau_grid[m], cmap="cividis", vmin=-0.2, vmax=1.0, aspect="auto")
+        ax.set_xticks(range(len(betas)))
+        ax.set_xticklabels([f"{b}" for b in betas])
+        ax.set_yticks(range(len(rhos)))
+        ax.set_yticklabels([f"{r}" for r in rhos])
+        if m == "KernelSHAP":
+            ax.set_ylabel(r"Collinearity $\rho$(X1, X2)")
+        ax.set_title(m.replace("_", " "), pad=4)
+        for i in range(len(rhos)):
+            for j in range(len(betas)):
+                v = tau_grid[m][i, j]
+                # cividis is dark at low tau, light at high tau: white text on the
+                # dark cells, black text on the light ones, keeps the numbers legible.
+                ax.text(j, i, f"{v:.2f}", ha="center", va="center", fontweight="bold",
+                        color="white" if v < 0.45 else "black", fontsize=7)
+    # one shared x label under the three panels (same text as before)
+    fig.supxlabel(r"Interaction coefficient $\beta_{\mathrm{int}}$",
+                  fontsize=plt.rcParams["axes.labelsize"])
+    fig.colorbar(im, ax=axes, shrink=0.9, pad=0.02, aspect=15,
+                 label="Kendall $\\tau$ (1.0 = perfect)")
+    fig.savefig(HERE / "e6_factorial_heatmap.pdf", bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(HERE / "e6_factorial_heatmap.png", bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    print(f"\nFigure saved to {HERE / 'e6_factorial_heatmap.pdf'}")
+
+
+if __name__ == "__main__":
+    import argparse
+    _ap = argparse.ArgumentParser()
+    _ap.add_argument("--plot-only", action="store_true",
+                     help="redraw the figure from e6_results.npy without rerunning")
+    if _ap.parse_args().plot_only:
+        make_figure(np.load(HERE / "e6_results.npy", allow_pickle=True).item())
+        raise SystemExit(0)
+
 import pandas as pd
 import shap
 import torch
@@ -44,7 +97,6 @@ from scipy.stats import kendalltau
 
 from path_explain import PathExplainerTorch
 
-HERE = Path(__file__).resolve().parent
 np.random.seed(0)
 torch.manual_seed(0)
 
@@ -189,33 +241,4 @@ out = {
 }
 np.save(HERE / "e6_results.npy", out)
 
-fig, axes = plt.subplots(1, 3, figsize=(14.5, 5.0), sharey=True)
-for ax, m in zip(axes, methods):
-    # cividis: perceptually uniform and color-blind-safe (replaces RdYlGn, which
-    # is the worst case for deuteranopia and unreadable in grayscale). Every cell
-    # is also annotated with its numeric tau below, so the figure reads in B&W.
-    im = ax.imshow(tau_grid[m], cmap="cividis", vmin=-0.2, vmax=1.0, aspect="auto")
-    ax.set_xticks(range(len(betas)))
-    ax.set_xticklabels([f"{b}" for b in betas])
-    ax.set_yticks(range(len(rhos)))
-    ax.set_yticklabels([f"{r}" for r in rhos])
-    ax.set_xlabel("Interaction coefficient β_int")
-    if m == "KernelSHAP":
-        ax.set_ylabel("Collinearity ρ(X1, X2)")
-    ax.set_title(m.replace("_", " "), fontsize=11, pad=8)
-    for i in range(len(rhos)):
-        for j in range(len(betas)):
-            v = tau_grid[m][i, j]
-            # cividis is dark at low tau, light at high tau: white text on the
-            # dark cells, black text on the light ones, keeps the numbers legible.
-            ax.text(j, i, f"{v:.2f}", ha="center", va="center", fontweight="bold",
-                    color="white" if v < 0.45 else "black", fontsize=10)
-
-fig.suptitle(
-    "E6 — Kendall τ vs. ground-truth ranking (collinearity × interaction factorial)",
-    fontsize=11,
-)
-fig.colorbar(im, ax=axes, shrink=0.7, label="Kendall τ (1.0 = perfect)")
-plt.savefig(HERE / "e6_factorial_heatmap.pdf", dpi=150, bbox_inches="tight")
-plt.savefig(HERE / "e6_factorial_heatmap.png", dpi=150, bbox_inches="tight")
-print(f"\nFigure saved to {HERE / 'e6_factorial_heatmap.pdf'}")
+make_figure(out)

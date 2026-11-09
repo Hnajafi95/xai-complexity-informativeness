@@ -28,8 +28,12 @@ attributes zero importance to X2.
 
 Run:
     cd revised_v2 && python3 experiments/e2_wilming_suppressor.py
+    cd revised_v2 && python3 experiments/e2_wilming_suppressor.py --plot-only
+(--plot-only redraws e2_suppressor_comparison.{pdf,png} from the saved
+e2_results.npy without rerunning the experiment.)
 """
 
+import argparse
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -39,13 +43,69 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from paper_style import apply_style, fig_size
+
+HERE = Path(__file__).resolve().parent
+
+
+def make_figure(results):
+    """Draw e2_suppressor_comparison.{pdf,png} from the saved e2_results.npy dict."""
+    apply_style()
+    normalized = results["normalized_importance"]
+    fig, ax = plt.subplots(figsize=fig_size(0.62, 0.50))
+    method_names = list(normalized.keys())
+    x1_vals = [normalized[m][0] for m in method_names]
+    x2_vals = [normalized[m][1] for m in method_names]
+    x_pos = np.arange(len(method_names))
+    bar_w = 0.38
+
+    ax.bar(x_pos - bar_w / 2, x1_vals, bar_w, label="X1 (signal)", color="#3498db")
+    ax.bar(x_pos + bar_w / 2, x2_vals, bar_w, label="X2 (suppressor)", color="#e74c3c")
+    # X2's data-generating relevance is 0; that reference is stated in the paper caption.
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(method_names, rotation=20, ha="right", rotation_mode="anchor")
+    ax.set_ylabel("Normalized |attribution|")
+    ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1.0), borderaxespad=0.0)
+    ax.grid(axis="y", alpha=0.3, linestyle="--")
+    ax.set_axisbelow(True)
+    ax.set_ylim(0, 1.05)
+    ax.set_xlim(-0.55, len(method_names) - 0.45)
+    ax.set_yticks(np.arange(0, 1.01, 0.2))
+
+    # Annotate the failure pattern
+    for i, (m, v2) in enumerate(zip(method_names, x2_vals)):
+        if v2 > 0.1:
+            ax.annotate(f"{v2:.2f}", (i + bar_w / 2 + 0.03, v2 + 0.02), ha="center", fontsize=7, color="#c0392b")
+    # Note on PatternAttribution, placed at the side below the legend
+    pa = len(method_names) - 1
+    ax.annotate(
+        "Haufe pattern\n(PatternAttribution)\nattributes ~0 to the\nsuppressor: the\ndata-generating answer.",
+        xy=(pa + bar_w / 2, x2_vals[-1] + 0.01), xycoords="data",
+        xytext=(1.02, 0.08), textcoords="axes fraction",
+        fontsize=7, ha="left", va="bottom",
+        bbox=dict(boxstyle="round,pad=0.3", facecolor="#eafaf1", alpha=0.95, linewidth=0.6),
+        arrowprops=dict(arrowstyle="->", color="gray", linewidth=0.8, relpos=(0.0, 0.3)),
+    )
+
+    for ext in ("pdf", "png"):
+        fig.savefig(HERE / f"e2_suppressor_comparison.{ext}", bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    print(f"Figure saved to {HERE / 'e2_suppressor_comparison.pdf'}")
+
+
+_ap = argparse.ArgumentParser()
+_ap.add_argument("--plot-only", action="store_true",
+                 help="redraw the figure from saved e2_results.npy; do not rerun the experiment")
+if _ap.parse_args().plot_only:
+    make_figure(np.load(HERE / "e2_results.npy", allow_pickle=True).item())
+    raise SystemExit(0)
+
+# Experiment-only dependencies (not needed for --plot-only)
 from sklearn.linear_model import LogisticRegression
 from sklearn.inspection import permutation_importance
 import shap
 import lime
 import lime.lime_tabular
-
-HERE = Path(__file__).resolve().parent
 
 np.random.seed(0)
 
@@ -181,47 +241,4 @@ results = {
     "normalized_importance": {k: v.tolist() for k, v in normalized.items()},
 }
 np.save(HERE / "e2_results.npy", results)
-
-# Figure
-fig, ax = plt.subplots(figsize=(9.5, 5))
-method_names = list(normalized.keys())
-x1_vals = [normalized[m][0] for m in method_names]
-x2_vals = [normalized[m][1] for m in method_names]
-x_pos = np.arange(len(method_names))
-bar_w = 0.38
-
-ax.bar(x_pos - bar_w / 2, x1_vals, bar_w, label="X1 (signal)", color="#3498db")
-ax.bar(x_pos + bar_w / 2, x2_vals, bar_w, label="X2 (suppressor; used by the model, no data-generating relevance)", color="#e74c3c")
-
-ax.axhline(0.0, color="green", linestyle="--", linewidth=1.2, alpha=0.7,
-           label="Data-generating relevance of X2 (0)")
-ax.set_xticks(x_pos)
-ax.set_xticklabels(method_names, rotation=12, ha="right")
-ax.set_ylabel("Normalized |attribution|")
-ax.set_title(
-    "E2 — Suppressor benchmark (Wilming et al. 2021/2023, 2-feature linear setup)\n"
-    "X1: signal; X2: suppressor (uninformative, but correlated with X1)",
-    fontsize=11,
-)
-ax.legend(fontsize=9, loc="upper left")
-ax.grid(axis="y", alpha=0.3, linestyle="--")
-ax.set_ylim(0, 1.0)
-
-# Annotate the failure pattern
-for i, (m, v2) in enumerate(zip(method_names, x2_vals)):
-    if v2 > 0.1:
-        ax.annotate(f"{v2:.2f}", (i + bar_w / 2, v2 + 0.02), ha="center", fontsize=9, color="#c0392b")
-ax.annotate(
-    "Haufe pattern (PatternAttribution)\nattributes ~0 to the suppressor:\nthe data-generating answer.",
-    xy=(4, x2_vals[-1] + 0.02),
-    xytext=(2.2, 0.55),
-    fontsize=9,
-    ha="center",
-    bbox=dict(boxstyle="round,pad=0.3", facecolor="#eafaf1", alpha=0.95),
-    arrowprops=dict(arrowstyle="->", color="gray"),
-)
-
-plt.tight_layout()
-plt.savefig(HERE / "e2_suppressor_comparison.pdf", dpi=150, bbox_inches="tight")
-plt.savefig(HERE / "e2_suppressor_comparison.png", dpi=150, bbox_inches="tight")
-print(f"\nFigure saved to {HERE / 'e2_suppressor_comparison.pdf'}")
+make_figure(results)

@@ -28,6 +28,8 @@ python experiments/e2_wilming_suppressor.py
 
 Each script writes its figure (`.pdf`/`.png`) and results file next to itself in `experiments/`. All randomness is seeded, so re-runs reproduce the saved results (small differences can come from different library versions or hardware).
 
+The experiment figures (E1–E10) are drawn at the width they print in the paper, using the shared style in `experiments/paper_style.py` (8 pt labels, 7 pt ticks and legends). Each script that draws a figure in the paper accepts `--plot-only`, which redraws the figure from the saved results without re-running the experiment, for example `python experiments/e7_carmichael_replication.py --plot-only` (for the E1 figure, `python experiments/t1_estimand_analysis.py --plot-only`). Two plotted inputs were recovered from the original vector figures because the first runs did not save them: the E4c per-feature top-1 counts (`top_feature_counts` in `e4c_results.npy`) and the E10 deletion curves (`mean_curves` in `e10_results.npy`). Each carries a `*_note` field describing the recovery and how it was checked; a full re-run saves both directly.
+
 | Paper item | Script | Output |
 |---|---|---|
 | Worked example (§2.5): diagnosis, method comparison | `a1_synthetic_experiment.py` | `a1_results.npy`, `a1_raw.npz`, `a1_comparison_chart.*` |
@@ -55,8 +57,8 @@ Figures in `figures/`:
 | Figure | Source |
 |---|---|
 | Figure 1 — complexity taxonomy | `figures/make_complexity_taxonomy.py` → `complexity_taxonomy_v2.{pdf,png}` and `complexity_taxonomy_v2_links.tex` (clickable citation overlay for LaTeX) |
-| Suppressor illustration | `figures/make_suppressor.py` → `suppressor_cb.{pdf,png}` |
-| Figure 2 — diagnostic workflow | `figures/diagnostic_workflow.svg` (editable), converted to PDF with `cairosvg` |
+| Figure 2 — suppressor illustration | `figures/make_suppressor.py` → `suppressor_cb.{pdf,png}` |
+| Figure 3 — diagnostic workflow | `figures/diagnostic_workflow.svg` (editable), converted to PDF with `cairosvg` |
 
 ## Notes on the methods
 

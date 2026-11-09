@@ -35,6 +35,51 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+from paper_style import apply_style, fig_size
+
+HERE = Path(__file__).resolve().parent
+
+
+def make_figure(out):
+    """Draw Fig. E5 from the saved results dict (e5_results.npy)."""
+    results = out["results"]
+    apply_style()
+    # wide, short canvas with the legend on the right
+    fig, ax = plt.subplots(figsize=fig_size(0.72, 0.40))
+    method_colors = {
+        "KernelSHAP": "#e74c3c",
+        "TreeSHAP": "#27ae60",
+        "PFI": "#f39c12",
+        "IG": "#3498db",
+        "IH": "#9b59b6",
+        "PatternAttr": "#7f8c8d",
+    }
+    for method, times in results.items():
+        ps = [pt for pt, _ in times if not np.isnan(_)]
+        ts = [t for _, t in times if not np.isnan(t)]
+        ax.plot(ps, ts, marker="o", label=method, color=method_colors[method])
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel("Number of features (p)")
+    ax.set_ylabel("Wall-clock time (s)")
+    ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), ncol=1, borderaxespad=0.0)
+    ax.grid(alpha=0.3, linestyle="--", which="both")
+    fig.savefig(HERE / "e5_scalability.pdf", bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(HERE / "e5_scalability.png", bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    print(f"\nFigure saved to {HERE / 'e5_scalability.pdf'}")
+
+
+if __name__ == "__main__":
+    import argparse
+    _ap = argparse.ArgumentParser()
+    _ap.add_argument("--plot-only", action="store_true",
+                     help="redraw the figure from e5_results.npy without rerunning")
+    if _ap.parse_args().plot_only:
+        make_figure(np.load(HERE / "e5_results.npy", allow_pickle=True).item())
+        raise SystemExit(0)
+
 import pandas as pd
 import shap
 import torch
@@ -45,7 +90,6 @@ from sklearn.linear_model import LinearRegression
 
 from path_explain import PathExplainerTorch
 
-HERE = Path(__file__).resolve().parent
 np.random.seed(0)
 torch.manual_seed(0)
 
@@ -215,32 +259,4 @@ for i, p in enumerate(p_values):
 out = {"p_values": p_values, "results": results}
 np.save(HERE / "e5_results.npy", out)
 
-fig, ax = plt.subplots(figsize=(8.5, 5.4))
-method_colors = {
-    "KernelSHAP": "#e74c3c",
-    "TreeSHAP": "#27ae60",
-    "PFI": "#f39c12",
-    "IG": "#3498db",
-    "IH": "#9b59b6",
-    "PatternAttr": "#7f8c8d",
-}
-for method, times in results.items():
-    ps = [pt for pt, _ in times if not np.isnan(_)]
-    ts = [t for _, t in times if not np.isnan(t)]
-    ax.plot(ps, ts, marker="o", label=method, color=method_colors[method], linewidth=2)
-ax.set_xscale("log")
-ax.set_yscale("log")
-ax.set_xlabel("Number of features (p)")
-ax.set_ylabel("Wall-clock time (seconds, log scale)")
-ax.set_title(
-    "E5 — Scalability of XAI methods with feature count\n"
-    f"({n_explain} test samples explained; KernelSHAP: 50 coalitions, 10 samples for p > 100; IH: 20 samples, p <= 250)",
-    fontsize=10,
-)
-ax.legend(fontsize=9, loc="upper left")
-ax.grid(alpha=0.3, linestyle="--", which="both")
-
-plt.tight_layout()
-plt.savefig(HERE / "e5_scalability.pdf", dpi=150, bbox_inches="tight")
-plt.savefig(HERE / "e5_scalability.png", dpi=150, bbox_inches="tight")
-print(f"\nFigure saved to {HERE / 'e5_scalability.pdf'}")
+make_figure(out)

@@ -34,8 +34,13 @@ participation), while an ISD readout separates them.
 Inputs: a1_raw.npz, e1_raw.npz, e8_raw.npz (written by a1_synthetic_experiment.py,
 e1_integrated_hessians.py, e8_deeplift_lrp_taylor.py). Run from revised_v2/:
     python3 experiments/t1_estimand_analysis.py
-Outputs: experiments/t1_results.npy, experiments/t1_estimand.{pdf,png}
+    python3 experiments/t1_estimand_analysis.py --plot-only   # redraw E1 figure only
+Outputs: experiments/t1_results.npy, experiments/t1_estimand.{pdf,png},
+         experiments/e1_ih_comparison.{pdf,png} (paper Fig. E1)
+--plot-only redraws e1_ih_comparison.{pdf,png} from the saved t1_results.npy and
+a1_raw.npz without rerunning any analysis (t1_estimand.{pdf,png} is left untouched).
 """
+import argparse
 import warnings
 warnings.filterwarnings("ignore")
 from itertools import combinations
@@ -45,10 +50,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-import shap
-import xgboost as xgb
-from sklearn.model_selection import train_test_split
+
+from paper_style import apply_style, fig_size
 
 HERE = Path(__file__).resolve().parent
 P = 9
@@ -92,6 +95,53 @@ def from_matrix(M):                         # (n, p, p) with rows summing to per
 
 def l1(a, b):
     return float(np.abs(a - b).sum())
+
+
+# ── E1 figure: GT vs KernelSHAP vs TreeSHAP-int vs IH, interaction-separated readout ──
+def make_e1_figure(rows, X_tree):
+    """Draw e1_ih_comparison.{pdf,png} from saved data only.
+
+    rows   : t1_results.npy["rows"] (per-method SA / ISD readouts)
+    X_tree : a1_raw.npz["X_tree"] (rows explained by TreeSHAP; ground-truth reference)
+    """
+    apply_style()
+    R = {r["method"]: r for r in rows}
+    gt_ref = gt_isd(X_tree)
+    disp = ["X1", "X2", "X3", "X4", "X5", "X3·X4"]
+    def isd6(r): return list(r["isd_main"][:5]) + [r["isd_pair34"]]
+    series = [("Ground truth (ISD)", list(gt_ref[:5]) + [gt_ref[P + I34]], "#333333", None),
+              ("KernelSHAP (per-feature)", list(R["KernelSHAP"]["sa"][:5]) + [np.nan], "#D55E00", "//"),
+              ("TreeSHAP interaction values", isd6(R["TreeSHAP int."]), "#E69F00", None),
+              ("Integrated Hessians", isd6(R["IG / IH"]), "#009E73", ".."),]
+    fig, ax = plt.subplots(figsize=fig_size(0.723, 0.55)); bw = 0.2; xp = np.arange(6)
+    for i, (lab, vals, col, h) in enumerate(series):
+        ax.bar(xp + (i - 1.5) * bw, vals, bw, label=lab, color=col, hatch=h,
+               edgecolor="white" if h else None, linewidth=0.4 if h else None)
+    ax.set_xticks(xp); ax.set_xticklabels(disp)
+    ax.set_ylabel("Normalized importance\n(9 mains + 36 pairs = 1)")
+    ax.set_ylim(0, 0.55)
+    ax.legend(frameon=False, loc="upper left"); ax.grid(axis="y", alpha=0.3, ls="--")
+    ax.set_axisbelow(True)
+    for ext in ("pdf", "png"):
+        fig.savefig(HERE / f"e1_ih_comparison.{ext}", bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    print("Saved e1_ih_comparison.{pdf,png}")
+
+
+_ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+_ap.add_argument("--plot-only", action="store_true",
+                 help="redraw e1_ih_comparison.{pdf,png} from saved t1_results.npy + a1_raw.npz")
+ARGS = _ap.parse_args()
+if ARGS.plot_only:
+    _t1 = np.load(HERE / "t1_results.npy", allow_pickle=True).item()
+    make_e1_figure(_t1["rows"], np.load(HERE / "a1_raw.npz")["X_tree"])
+    raise SystemExit(0)
+
+# Experiment-only dependencies (not needed for --plot-only)
+import pandas as pd
+import shap
+import xgboost as xgb
+from sklearn.model_selection import train_test_split
 
 
 a1 = np.load(HERE / "a1_raw.npz")
@@ -239,22 +289,5 @@ fig.tight_layout()
 fig.savefig(HERE / "t1_estimand.pdf"); fig.savefig(HERE / "t1_estimand.png", dpi=200)
 print("\nSaved t1_results.npy and t1_estimand.{pdf,png}")
 
-# ── E1 figure: GT vs KernelSHAP vs TreeSHAP-int vs IH, interaction-separated readout ──
-R = {r["method"]: r for r in rows}
-gt_ref = gt_isd(Xt)
-disp = ["X1", "X2", "X3", "X4", "X5", "X3·X4"]
-def isd6(r): return list(r["isd_main"][:5]) + [r["isd_pair34"]]
-series = [("Ground truth (ISD)", list(gt_ref[:5]) + [gt_ref[P + I34]], "#333333", None),
-          ("KernelSHAP (per-feature)", list(R["KernelSHAP"]["sa"][:5]) + [np.nan], "#D55E00", "//"),
-          ("TreeSHAP interaction values", isd6(R["TreeSHAP int."]), "#E69F00", None),
-          ("Integrated Hessians", isd6(R["IG / IH"]), "#009E73", ".."),]
-fig, ax = plt.subplots(figsize=(9, 4.6)); bw = 0.2; xp = np.arange(6)
-for i, (lab, vals, col, h) in enumerate(series):
-    ax.bar(xp + (i - 1.5) * bw, vals, bw, label=lab, color=col, hatch=h, edgecolor="white" if h else None)
-ax.set_xticks(xp); ax.set_xticklabels(disp)
-ax.set_ylabel("Normalized importance (9 mains + 36 pairs = 1)")
-ax.set_title("E1 — Worked-example DGP, interaction-separated readout\n"
-             "KernelSHAP has no pair term: its X3, X4 bars hold the interaction's Shapley share", fontsize=10)
-ax.legend(fontsize=8.5, frameon=False); ax.grid(axis="y", alpha=0.3, ls="--")
-fig.tight_layout(); fig.savefig(HERE / "e1_ih_comparison.pdf"); fig.savefig(HERE / "e1_ih_comparison.png", dpi=200)
-print("Saved e1_ih_comparison.{pdf,png}")
+# ── E1 figure (drawn by make_e1_figure, defined above) ──────────────────
+make_e1_figure(rows, Xt)

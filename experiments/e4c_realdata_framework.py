@@ -9,16 +9,59 @@ feature importance, using bootstrap STABILITY as the objective criterion.
 
 Run from revised_v2/:
     DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python3 experiments/e4c_realdata_framework.py
+Redraw the figure from the saved results only (no model fitting):
+    python3 experiments/e4c_realdata_framework.py --plot-only
 """
-import warnings, json
+import warnings, json, sys
 warnings.filterwarnings("ignore")
 from pathlib import Path
 from collections import Counter
 import numpy as np
-import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+from paper_style import apply_style, fig_size
+
+
+def make_figure(out):
+    """Fig. E4c, drawn at print size from the saved results dict (e4c_results.npy)."""
+    apply_style()
+    B = out["B"]
+    items = out["top_feature_counts"]          # [(feature, count), ...], most common first
+    labs = [n.replace("_", " ") for n, _ in items]
+    vals = [100 * c / B for _, c in items]
+    feat_pct, clust_pct = out["modal_feature_pct"], out["modal_cluster_pct"]
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=fig_size(0.85, 0.42),
+                                   gridspec_kw={"width_ratios": [1.35, 1]})
+    # left: how often each feature is the naive #1 (instability spread)
+    ax1.barh(range(len(labs)), vals, color="#D55E00")
+    ax1.set_yticks(range(len(labs))); ax1.set_yticklabels(labs)
+    ax1.invert_yaxis(); ax1.set_xlabel("% of bootstraps feature is the #1")
+    ax1.set_title("(a) Naive per-feature SHAP:\nthe top feature flips across bootstraps")
+    ax1.grid(axis="x", alpha=0.3, linestyle="--")
+    # right: feature-level vs cluster-level reproducibility
+    ax2.bar([0, 1], [feat_pct, clust_pct], color=["#D55E00", "#0072B2"], width=0.55)
+    ax2.set_xticks([0, 1]); ax2.set_xticklabels(["top FEATURE\n(naive)", "top CLUSTER\n(framework)"])
+    ax2.set_ylabel("% of bootstraps\nthe #1 is the same"); ax2.set_ylim(0, 105)
+    for x, v in zip([0, 1], [feat_pct, clust_pct]):
+        ax2.text(x, v + 2, f"{v:.0f}%", ha="center", fontweight="bold")
+    ax2.set_title(f"(b) Stability of the headline (B={B})\nKendall-$\\tau$: feature {out['feature_tau']:.2f}"
+                  f" vs cluster {out['cluster_tau']:.2f}")
+    fig.tight_layout(w_pad=2.0)
+    fig.savefig(HERE / "e4c_realdata_framework.pdf", bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(HERE / "e4c_realdata_framework.png", dpi=300, bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    print("wrote e4c_realdata_framework.pdf/.png")
+
+
+if "--plot-only" in sys.argv:
+    make_figure(np.load(HERE / "e4c_results.npy", allow_pickle=True).item())
+    sys.exit(0)
+
+import pandas as pd
 import shap
 import xgboost as xgb
 from sklearn.datasets import load_breast_cancer
@@ -27,7 +70,6 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from scipy.stats import pearsonr
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-HERE = Path(__file__).resolve().parent
 SEED = 0
 np.random.seed(SEED)
 B = 40   # bootstrap resamples
@@ -233,6 +275,7 @@ out = {"vif_severe": vif_severe, "vif_moderate": vif_mod, "kappa": float(kappa),
        "suppressor_flips": flips, "leaves": leaves,
        "modal_feature": names[modal_feat], "modal_feature_pct": 100*modal_feat_n/B,
        "distinct_top_features": len(fc),
+       "top_feature_counts": [(names[i], n) for i, n in fc.most_common()],
        "modal_cluster_pct": 100*modal_clust_n/B,
        "modal_cluster": [names[i] for i in sorted(clusters[modal_clust])],
        "feature_tau": feat_tau, "cluster_tau": clust_tau, "B": B,
@@ -241,23 +284,4 @@ out = {"vif_severe": vif_severe, "vif_moderate": vif_mod, "kappa": float(kappa),
 np.save(HERE / "e4c_results.npy", out)
 print("\nsaved e4c_results.npy")
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.5, 4.4))
-# left: how often each feature is the naive #1 (instability spread)
-items = fc.most_common()
-labs = [names[i].replace("_", " ") for i, _ in items]
-vals = [100*n/B for _, n in items]
-ax1.barh(range(len(labs)), vals, color="#D55E00")
-ax1.set_yticks(range(len(labs))); ax1.set_yticklabels(labs, fontsize=8)
-ax1.invert_yaxis(); ax1.set_xlabel("% of bootstraps feature is the #1")
-ax1.set_title("Naive per-feature SHAP: unstable headline\n(top feature flips across size- and concavity-group features)", fontsize=9.5)
-# right: feature-level vs cluster-level reproducibility
-ax2.bar([0, 1], [modal_feat_n/B*100, modal_clust_n/B*100], color=["#D55E00", "#0072B2"], width=0.55)
-ax2.set_xticks([0, 1]); ax2.set_xticklabels(["top FEATURE\n(naive)", "top CLUSTER\n(framework)"])
-ax2.set_ylabel("% of bootstraps the #1 is the same"); ax2.set_ylim(0, 105)
-for x, v in zip([0, 1], [modal_feat_n/B*100, modal_clust_n/B*100]):
-    ax2.text(x, v+2, f"{v:.0f}%", ha="center", fontweight="bold")
-ax2.set_title(f"Stability of the headline (B={B})\nKendall-$\\tau$: feature {feat_tau:.2f} vs cluster {clust_tau:.2f}", fontsize=9.5)
-plt.tight_layout()
-plt.savefig(HERE / "e4c_realdata_framework.pdf", bbox_inches="tight")
-plt.savefig(HERE / "e4c_realdata_framework.png", dpi=160, bbox_inches="tight")
-print("wrote e4c_realdata_framework.pdf/.png")
+make_figure(out)

@@ -1,92 +1,107 @@
-<svg viewBox="0 0 1000 750" xmlns="http://www.w3.org/2000/svg" font-family="Arial Unicode MS, Helvetica, Arial, sans-serif">
+<svg viewBox="0 0 760 712" width="760" height="712" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, Arial Unicode MS, sans-serif">
+  <!-- Figure 3: three-step diagnostic workflow. Included at \textwidth (452pt),
+       so 1 unit ~ 0.595pt: font-size 13 ~ 7.7pt, 16 ~ 9.5pt.
+       Convert: python3 -c "import cairosvg; cairosvg.svg2pdf(url='figures/diagnostic_workflow.svg', write_to='figures/diagnostic_workflow.pdf')" -->
   <defs>
     <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
       <polygon points="0 0, 7 3, 0 6" fill="#475569"/>
     </marker>
   </defs>
 
-  <text x="500" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#1e293b">Complexity-Aware Method Selection: A Three-Step Diagnostic Workflow</text>
-  <text x="500" y="56" text-anchor="middle" font-size="12" fill="#64748b">Diagnose the model–data complexity profile, then select an XAI method whose assumptions match it (§2.4)</text>
-
   <!-- STEP 1 -->
-  <rect x="40" y="86" width="920" height="170" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-  <text x="60" y="112" font-size="15" font-weight="bold" fill="#1d4ed8">STEP 1 — Diagnose the complexity profile</text>
-  <text x="60" y="132" font-size="11" fill="#64748b">Run five quantitative tests on the trained model + data (cheapest first). Each flags one dimension; all cutoffs are provisional (Table 2).</text>
+  <rect x="10" y="6" width="740" height="214" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="26" y="32" font-size="16.5" font-weight="bold" fill="#1d4ed8">STEP 1 — Diagnose the complexity profile</text>
+  <text x="26" y="53" font-size="13" fill="#475569">Run five quantitative tests on the trained model + data, cheapest first. Each test flags one</text>
+  <text x="26" y="70" font-size="13" fill="#475569">dimension; all cutoffs are provisional (Table 2).</text>
 
-  <!-- five test boxes -->
-  <g font-size="11">
-    <rect x="60" y="146" width="166" height="90" rx="6" fill="#ffffff" stroke="#93c5fd"/>
-    <text x="143" y="166" text-anchor="middle" font-weight="bold" fill="#1e293b">Collinearity</text>
-    <text x="143" y="186" text-anchor="middle" fill="#475569">VIF, condition no. κ(X)</text>
-    <text x="143" y="206" text-anchor="middle" fill="#94a3b8">flag: VIF &gt; 5 (moderate), &gt; 10</text>
+  <g font-size="12" font-weight="bold" fill="#64748b">
+    <text x="36" y="94">Dimension</text>
+    <text x="170" y="94">Diagnostic</text>
+    <text x="420" y="94">Flag if</text>
+  </g>
+  <g font-size="13">
+    <rect x="26" y="101" width="708" height="22" fill="#ffffff"/>
+    <text x="36" y="117" font-weight="bold" fill="#1e293b">Collinearity</text>
+    <text x="170" y="117" fill="#334155">VIF, condition number κ(X)</text>
+    <text x="420" y="117" fill="#334155">VIF &gt; 5 (moderate), &gt; 10 (severe)</text>
 
-    <rect x="238" y="146" width="166" height="90" rx="6" fill="#ffffff" stroke="#93c5fd"/>
-    <text x="321" y="166" text-anchor="middle" font-weight="bold" fill="#1e293b">Interactions</text>
-    <text x="321" y="186" text-anchor="middle" fill="#475569">SHAP interaction matrix</text>
-    <text x="321" y="206" text-anchor="middle" fill="#94a3b8">flag: |Φjk| &gt; 0.05 × mean main</text>
+    <rect x="26" y="123" width="708" height="22" fill="#dbeafe"/>
+    <text x="36" y="139" font-weight="bold" fill="#1e293b">Interactions</text>
+    <text x="170" y="139" fill="#334155">SHAP interaction matrix</text>
+    <text x="420" y="139" fill="#334155">|Φ<tspan dy="3" font-size="9">jk</tspan><tspan dy="-3">| &gt; 0.05 × mean main effect</tspan></text>
 
-    <rect x="416" y="146" width="166" height="90" rx="6" fill="#ffffff" stroke="#93c5fd"/>
-    <text x="499" y="166" text-anchor="middle" font-weight="bold" fill="#1e293b">Nonlinearity</text>
-    <text x="499" y="186" text-anchor="middle" fill="#475569">degree-2 poly vs. linear ΔR²</text>
-    <text x="499" y="206" text-anchor="middle" fill="#94a3b8">flag: NL &gt; 0.10</text>
+    <rect x="26" y="145" width="708" height="22" fill="#ffffff"/>
+    <text x="36" y="161" font-weight="bold" fill="#1e293b">Nonlinearity</text>
+    <text x="170" y="161" fill="#334155">degree-2 polynomial vs. linear, ΔR²</text>
+    <text x="420" y="161" fill="#334155">NL &gt; 0.10</text>
 
-    <rect x="594" y="146" width="166" height="90" rx="6" fill="#ffffff" stroke="#93c5fd"/>
-    <text x="677" y="166" text-anchor="middle" font-weight="bold" fill="#1e293b">Suppressors</text>
-    <text x="677" y="186" text-anchor="middle" fill="#475569">r vs. partial corr ρ</text>
-    <text x="677" y="206" text-anchor="middle" fill="#94a3b8">flag: sign flip or |ρ| &gt; 2|r|</text>
+    <rect x="26" y="167" width="708" height="22" fill="#dbeafe"/>
+    <text x="36" y="183" font-weight="bold" fill="#1e293b">Suppressors</text>
+    <text x="170" y="183" fill="#334155">r vs. partial correlation ρ</text>
+    <text x="420" y="183" fill="#334155">sign flip, or |ρ| &gt; 2|r|</text>
 
-    <rect x="772" y="146" width="166" height="90" rx="6" fill="#ffffff" stroke="#93c5fd"/>
-    <text x="855" y="166" text-anchor="middle" font-weight="bold" fill="#1e293b">Capacity</text>
-    <text x="855" y="186" text-anchor="middle" fill="#475569">eff. Hessian rank</text>
-    <text x="855" y="206" text-anchor="middle" fill="#94a3b8">flag: leaves &gt; 10⁵ / rank &gt; 100</text>
+    <rect x="26" y="189" width="708" height="22" fill="#ffffff"/>
+    <text x="36" y="205" font-weight="bold" fill="#1e293b">Capacity</text>
+    <text x="170" y="205" fill="#334155">effective Hessian rank</text>
+    <text x="420" y="205" fill="#334155">leaves &gt; 10<tspan dy="-5" font-size="9">5</tspan><tspan dy="5"> or rank &gt; 100</tspan></text>
   </g>
 
-  <!-- decision diamond region -->
-  <text x="500" y="284" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">Any test flagged?</text>
-  <line x1="500" y1="256" x2="500" y2="272" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- decision -->
+  <line x1="380" y1="220" x2="380" y2="240" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="380" y="261" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e293b">Any test flagged?</text>
 
   <!-- NO branch -->
-  <line x1="500" y1="290" x2="220" y2="320" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="330" y="302" text-anchor="middle" font-size="11" fill="#16a34a" font-weight="bold">NO</text>
-  <rect x="60" y="320" width="320" height="64" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
-  <text x="220" y="346" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">Complexity-simple</text>
-  <text x="220" y="368" text-anchor="middle" font-size="11" fill="#475569">Standard SHAP / LIME / IG are likely reliable.</text>
+  <line x1="340" y1="264" x2="100" y2="290" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="208" y="268" text-anchor="middle" font-size="13" fill="#16a34a" font-weight="bold">NO</text>
+  <rect x="10" y="292" width="168" height="104" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+  <text x="94" y="320" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#15803d">Complexity-simple</text>
+  <g font-size="13" fill="#334155" text-anchor="middle">
+    <text x="94" y="344">Standard SHAP,</text>
+    <text x="94" y="362">LIME, and IG are</text>
+    <text x="94" y="380">likely reliable.</text>
+  </g>
 
   <!-- YES branch -->
-  <line x1="500" y1="290" x2="700" y2="320" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="640" y="302" text-anchor="middle" font-size="11" fill="#dc2626" font-weight="bold">YES</text>
+  <line x1="420" y1="264" x2="470" y2="290" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="472" y="268" text-anchor="middle" font-size="13" fill="#dc2626" font-weight="bold">YES</text>
 
   <!-- STEP 2 -->
-  <rect x="420" y="320" width="540" height="186" rx="10" fill="#faf5ff" stroke="#8b5cf6" stroke-width="2"/>
-  <text x="440" y="346" font-size="15" font-weight="bold" fill="#7c3aed">STEP 2 — Map diagnosis to method</text>
-  <text x="440" y="366" font-size="11" fill="#64748b">If multiple flags, provisional tie-breaker (not a severity ranking):</text>
-  <text x="440" y="384" font-size="11" font-weight="bold" fill="#1e293b">interactions &gt; suppressors &gt; collinearity &gt; nonlinearity &gt; capacity</text>
+  <rect x="192" y="292" width="558" height="230" rx="10" fill="#faf5ff" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="208" y="318" font-size="16.5" font-weight="bold" fill="#7c3aed">STEP 2 — Map diagnosis to method</text>
+  <text x="208" y="339" font-size="13" fill="#475569">If several tests flag, provisional tie-breaker (not a severity ranking):</text>
+  <text x="208" y="358" font-size="13" font-weight="bold" fill="#1e293b">interactions &gt; suppressors &gt; collinearity &gt; nonlinearity &gt; capacity</text>
 
-  <g font-size="10.5">
-    <rect x="440" y="394" width="508" height="17" fill="#ede9fe"/>
-    <text x="450" y="406.5" fill="#1e293b">Interactions → TreeSHAP interaction values, Shapley-Taylor, Integrated Hessians</text>
-    <rect x="440" y="412" width="508" height="17" fill="#f5f3ff"/>
-    <text x="450" y="424.5" fill="#1e293b">Suppressors → PatternAttribution / Haufe patterns; report the suppressor check</text>
-    <rect x="440" y="430" width="508" height="17" fill="#ede9fe"/>
-    <text x="450" y="442.5" fill="#1e293b">Collinearity → grouped interv. SHAP (model); obs. SHAP, CALIME, AEC (data)</text>
-    <rect x="440" y="448" width="508" height="17" fill="#f5f3ff"/>
-    <text x="450" y="460.5" fill="#1e293b">Nonlinearity → IG, Integrated Hessians, DeepLIFT</text>
-    <rect x="440" y="466" width="508" height="17" fill="#ede9fe"/>
-    <text x="450" y="478.5" fill="#1e293b">Capacity → SmoothGrad, VarGrad, ensemble attributions</text>
-    <rect x="440" y="484" width="508" height="17" fill="#f5f3ff"/>
-    <text x="450" y="496.5" fill="#1e293b">Architecture → SLALOM (transformers); applicability: failure-mode map (§3)</text>
+  <g font-size="13">
+    <rect x="204" y="368" width="534" height="24" fill="#ede9fe"/>
+    <text x="212" y="385" font-weight="bold" fill="#1e293b">Interactions</text>
+    <text x="304" y="385" fill="#1e293b">TreeSHAP interaction values, Shapley–Taylor, Integrated Hessians</text>
+    <rect x="204" y="392" width="534" height="24" fill="#f5f3ff"/>
+    <text x="212" y="409" font-weight="bold" fill="#1e293b">Suppressors</text>
+    <text x="304" y="409" fill="#1e293b">PatternAttribution / Haufe patterns; report the suppressor check</text>
+    <rect x="204" y="416" width="534" height="24" fill="#ede9fe"/>
+    <text x="212" y="433" font-weight="bold" fill="#1e293b">Collinearity</text>
+    <text x="304" y="433" fill="#1e293b">grouped interv. SHAP (model); obs. SHAP, CALIME, AEC (data)</text>
+    <rect x="204" y="440" width="534" height="24" fill="#f5f3ff"/>
+    <text x="212" y="457" font-weight="bold" fill="#1e293b">Nonlinearity</text>
+    <text x="304" y="457" fill="#1e293b">IG, Integrated Hessians, DeepLIFT</text>
+    <rect x="204" y="464" width="534" height="24" fill="#ede9fe"/>
+    <text x="212" y="481" font-weight="bold" fill="#1e293b">Capacity</text>
+    <text x="304" y="481" fill="#1e293b">SmoothGrad, VarGrad, ensemble attributions</text>
+    <rect x="204" y="488" width="534" height="24" fill="#f5f3ff"/>
+    <text x="212" y="505" font-weight="bold" fill="#1e293b">Architecture</text>
+    <text x="304" y="505" fill="#1e293b">SLALOM (transformers); applicability: failure-mode map (§3)</text>
   </g>
 
   <!-- STEP 3 -->
-  <line x1="690" y1="506" x2="500" y2="528" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
-  <rect x="140" y="528" width="720" height="150" rx="10" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-  <text x="160" y="554" font-size="15" font-weight="bold" fill="#b45309">STEP 3 — Validate the diagnosis</text>
-  <g font-size="11.5" fill="#475569">
-    <text x="160" y="580">1.  Apply one recommended and one discouraged method — rankings should diverge on flagged features.</text>
-    <text x="160" y="604">2.  Model questions: ROAR — recommended method should give a steeper drop (confounded by redundancy).</text>
-    <text x="160" y="628">3.  Stability: perturb input by ε; recommended method's attributions should change less.</text>
-    <text x="160" y="652">4.  Agreement (τ &gt; 0.9) despite a flag → false positive or no effect (interactions: compare ISD readouts).</text>
+  <line x1="470" y1="522" x2="430" y2="540" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="10" y="542" width="740" height="132" rx="10" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+  <text x="26" y="568" font-size="16.5" font-weight="bold" fill="#b45309">STEP 3 — Validate the diagnosis</text>
+  <g font-size="13" fill="#334155">
+    <text x="26" y="592">1.  Apply one recommended and one discouraged method — rankings should diverge on flagged features.</text>
+    <text x="26" y="614">2.  Model questions: ROAR — recommended method should give a steeper drop (confounded by redundancy).</text>
+    <text x="26" y="636">3.  Stability: perturb input by ε; recommended method's attributions should change less.</text>
+    <text x="26" y="658">4.  Agreement (τ &gt; 0.9) despite a flag → false positive or no effect (interactions: compare ISD readouts).</text>
   </g>
 
-  <text x="500" y="714" text-anchor="middle" font-size="11.5" fill="#64748b" font-style="italic">Outcome: an evidence-based method choice instead of a default. Worked end-to-end in §2.5; illustrated in E1–E10 and on real data in E4c (§5).</text>
+  <text x="380" y="700" text-anchor="middle" font-size="13" fill="#64748b" font-style="italic">Outcome: an evidence-based method choice instead of a default (worked end-to-end in §2.5; real data in E4c).</text>
 </svg>
